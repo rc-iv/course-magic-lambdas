@@ -3,3 +3,8 @@ node_modules
 # ignore course-magic-lambdas\createAndPublishDocument\coursemagic-33154da49918.json
 course-magic-lambdas/createAndPublishDocument/coursemagic-33154da49918.json
 course-magic-lambdas/deleteGoogleDocument/coursemagic-33154da49918.json
+coursemagic-33154da49918.json
+
+# ignore any file named coursemagic-33154da49918.json from any directory or subdirectory
+**/coursemagic-33154da49918.json
+```
