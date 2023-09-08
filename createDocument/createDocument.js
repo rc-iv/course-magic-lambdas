@@ -31,10 +31,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = void 0;
+globalThis.AbortController = require('abort-controller');
 const AWS = __importStar(require("aws-sdk"));
 const uuid_1 = require("uuid");
+const openai_1 = __importDefault(require("openai"));
+const openai = new openai_1.default({
+    apiKey: process.env.OPENAI_API_KEY
+});
 const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: "us-east-1" });
 const lambda = new AWS.Lambda();
 const handler = (event) => __awaiter(void 0, void 0, void 0, function* () {
@@ -46,29 +54,46 @@ const handler = (event) => __awaiter(void 0, void 0, void 0, function* () {
             return {
                 statusCode: 400,
                 headers: {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Credentials': true,
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Credentials": true,
                 },
                 body: JSON.stringify({
                     message: "DocumentName, CourseId, and UserEmail are required",
                 }),
             };
         }
+        // Generate a prompt for OpenAI API based on the document attributes
+        const userPrompt = `Create a ${DocumentType} on ${TopicAdditionalInfo} for grade ${GradeLevel} with aptitude level ${AptitudeLevel}.`;
+        const systemPrompt = `You are an expert teacher on ${TopicAdditionalInfo} and you will create well formatted content for a google document with the user requested information. You only return the content of the document requests and no other conversation.`;
+        // Call OpenAI API to get the generated content
+        const completion = yield openai.chat.completions.create({
+            messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }],
+            model: "gpt-4",
+        });
+        console.log(`OpenAI Completion: ${JSON.stringify(completion)}`);
+        const aiGeneratedContent = completion.choices[0].message.content;
+        console.log(`AI Generated Content: ${JSON.stringify(aiGeneratedContent)}`);
         // Prepare the payload for the createAndUpdateDocument Lambda
         const payload = {
             fileName: DocumentName,
-            content: "The response from the generated AI prompt will go here", // TODO use another lambda to generate the AI prompt and get response
+            content: aiGeneratedContent
         };
+        console.log(`Payload: ${JSON.stringify(payload)}`);
         // Invoke the createAndUpdateDocument Lambda
         const params = {
-            FunctionName: "createAndUpdateDocument",
+            FunctionName: "CourseMagicCreateAndPublishDocument",
             InvocationType: "RequestResponse",
             Payload: JSON.stringify(payload),
         };
         const result = yield lambda.invoke(params).promise();
+        console.log(`Result from createAndUpdateDocument: ${JSON.stringify(result)}`);
         const responseBody = JSON.parse(result.Payload);
+        // Parse the body to get the actual data
+        const parsedBody = JSON.parse(responseBody.body);
         // Extract the embedLink and fileId
-        const { embedLink, fileId } = responseBody;
+        const { embedLink, fileId } = parsedBody;
+        console.log(`embedLink: ${embedLink}`);
+        console.log(`fileId: ${fileId}`);
         // Generate a UUID for the document
         const DocumentId = (0, uuid_1.v4)();
         // Create a new document
@@ -95,8 +120,8 @@ const handler = (event) => __awaiter(void 0, void 0, void 0, function* () {
         return {
             statusCode: 200,
             headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': true,
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Credentials": true,
             },
             body: JSON.stringify({
                 message: "Document successfully created",
@@ -109,8 +134,8 @@ const handler = (event) => __awaiter(void 0, void 0, void 0, function* () {
         return {
             statusCode: 500,
             headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': true,
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Credentials": true,
             },
             body: JSON.stringify({ message: "Internal Server Error" }),
         };

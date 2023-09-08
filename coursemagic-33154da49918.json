@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "coursemagic",
+  "private_key_id": "33154da49918b7c56a881dce560e2f096750c31d",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDcRh1hHSXv0qZD\nqNa4E02GmD38c9TjHUN8pCifMpeo/6PLI9yo62jUpvW84trTXz5vlEwp9ZzYbAzw\nUp52BsamSVA2iOhrvjlC3yYTWOTRb/SxEgLej5cCwnnbmlfBasc/yAkZt5Hb4JsR\nkOOB7uxu2si9MWjCEZqJY7xE34aP0+0Z9P5vTk/m9d3RsZSe0NIXk0+0umUtAJIr\nphC445cbZFgQuwEOjTCEVx1H5zobzAxXAdd1ytMXtJ90ArNKBDw6bsdmEeFVy4RU\nwdU5Sldau77aQHrjBQ/lTwVAbvoZBjYoZRRT3JIqoNJXkk6ZfCEuR0uHPDBgvsHz\n06d+yqQtAgMBAAECggEACTJI3g9EUF/IPvE+IbT18CV2tQ21o351x67niUSoo07P\nrQFZdZilKaJc28l8NFtOH9oeV0Qgtm0bGdor29FK8DywWM6HfElsBO2Mc+iqs6R2\ndVbDVZJuI23bfj59OnSK+WU7HV6WJuAY6UyrdaHJhOlP0eJNtYiG81nSzZdS0WSw\n/mbMdXfrYzdP0SGFupQhLjdd8WsXOqcigQnMogNs2npagDbHlOqAu6awpoOT9szn\nHNzF9YGqPj/R13drx309OW7K4etWXVK40BpujfZG12089Om4rwtufgBcL5MaYfo5\nSZPag2PY3cDgrI/Y1KPvUsogiMaCNCSuWVqiOAlm+wKBgQD+6xH68kQ6YNo0Pm/k\nOU9Vu1dcM40hntO1S80UgFUMt3Q3VXKG2e2Wu17ph92xqWzpGDGf6JS9EITvGa0d\n5oKgFQddfkTmqFeBo9xustU9vzOUkD+n2dWw5zDmC33NK0iJFe4TpF6C+kMXueQD\nTsF92dEb10+L9iLlCmkqLzXAfwKBgQDdNWih8O0/2Qge3Cf1B7FBgkcx4ipxeKc6\nA6s7tFFVJbc+kkbj7WpJspGZargK/fpZTJPa9jz0foikTa3OAHg72u1pPw61+Qb3\npsi9hCZW7wczlZWUA0ujiGJfhVjIh5PMTyBXMQqckQ4FdIsAEdGcWqwsFB/ydrhi\nY7/TjwVFUwKBgBf14GrF+sPB9sCSXdIF0P8t7Lgt4EYYt62CwnP63AOl+rZ4wZsL\nQNm6IuGwc5YPZr1CGOf+5Hwg4V3X+/2jfQOu9lJDXBaSHCeDT2TYSlLTdfWw2Urd\nnshR8rasvdZbCyZXeVk/SeLlwwin4FavQGCj6JPFWSS+rej5YYklhtfhAoGBAMcw\nIZC5BpmYj3RiX+SHUbigXAVyFy/oKgTWaukvHJGkjZXdV9JD5ZKJJgxUiXb0berd\nRsJDOm4aRmZUwC2gRKP5JhDARDneDMURvO7SQUfEouJzTqZiNUkDNTm4NFMVqiOu\nGHwK3/hNsad94vBkGzBEgYaLdJz7BFssYP5aaa+bAoGATMECANlDFEmhxtl53O5T\nscWv38vuwHyQSsp+OJmHA3HXEpbSMBCVNDQkyp6lTInVCHjo2QCQW8oSouh98XvF\nMu125utOdn9skhrW0sgQtDc+gqCFTTW0GOcDrpuZ1g2dNxL/QSgaIhcbbvIrduYd\nm8+G7VexQD2/CQue3cDWpZM=\n-----END PRIVATE KEY-----\n",
+  "client_email": "coursemagicdriveapi@coursemagic.iam.gserviceaccount.com",
+  "client_id": "101771516138366178448",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/coursemagicdriveapi%40coursemagic.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

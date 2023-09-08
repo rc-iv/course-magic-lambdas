@@ -15,10 +15,10 @@ export const handler = async (
   // Initialize the Drive API client
   const drive = google.drive({ version: "v3", auth });
 
-  // Extract file name and content from the event body
-  const body = JSON.parse(event.body || "{}");
-  const fileName = body.fileName || "New Document";
-  const content = body.content || "Default text content";
+  // Extract file name and content from the event
+  const { fileName, content } = event;
+  console.log(`fileName: ${fileName}`);
+  console.log(`content: ${content}`);
 
   try {
     // Step 1: Create a new Google Document with the given name

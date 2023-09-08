@@ -17,10 +17,10 @@ const handler = (event) => __awaiter(void 0, void 0, void 0, function* () {
     const auth = new googleapis_1.google.auth.JWT(process.env.SERVICE_ACCOUNT_EMAIL, undefined, (_a = process.env.SERVICE_ACCOUNT_PRIVATE_KEY) === null || _a === void 0 ? void 0 : _a.replace(/\\n/g, "\n"), ["https://www.googleapis.com/auth/drive"]);
     // Initialize the Drive API client
     const drive = googleapis_1.google.drive({ version: "v3", auth });
-    // Extract file name and content from the event body
-    const body = JSON.parse(event.body || "{}");
-    const fileName = body.fileName || "New Document";
-    const content = body.content || "Default text content";
+    // Extract file name and content from the event
+    const { fileName, content } = event;
+    console.log(`fileName: ${fileName}`);
+    console.log(`content: ${content}`);
     try {
         // Step 1: Create a new Google Document with the given name
         console.log("Creating document");
