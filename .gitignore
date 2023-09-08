@@ -1,2 +1,5 @@
 # ignore any node module folders in root and subfolders
 node_modules
+# ignore course-magic-lambdas\createAndPublishDocument\coursemagic-33154da49918.json
+course-magic-lambdas/createAndPublishDocument/coursemagic-33154da49918.json
+course-magic-lambdas\deleteGoogleDocument\coursemagic-33154da49918.json
