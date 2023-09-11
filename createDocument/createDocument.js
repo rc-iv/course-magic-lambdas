@@ -48,7 +48,7 @@ const lambda = new AWS.Lambda();
 const handler = (event) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const requestBody = JSON.parse(event.body || "{}");
-        const { DocumentName, DocumentCategory, DocumentType, GradeLevel, AptitudeLevel, TopicAdditionalInfo, AI_Prompt, CourseId, UserEmail, } = requestBody;
+        const { DocumentName, DocumentCategory, DocumentType, GradeLevel, AptitudeLevel, TopicAdditionalInfo, AI_Prompt, CourseId, UserEmail, CourseName } = requestBody;
         // Validate request body
         if (!DocumentName || !CourseId || !UserEmail) {
             return {
@@ -63,8 +63,8 @@ const handler = (event) => __awaiter(void 0, void 0, void 0, function* () {
             };
         }
         // Generate a prompt for OpenAI API based on the document attributes
-        const userPrompt = `Create a ${DocumentType} on ${TopicAdditionalInfo} for grade ${GradeLevel} with aptitude level ${AptitudeLevel}.`;
-        const systemPrompt = `You are an expert teacher on ${TopicAdditionalInfo} and you will create well formatted content for a google document with the user requested information. You only return the content of the document requests and no other conversation.`;
+        const userPrompt = `Create a ${DocumentType} document for the subject of ${CourseName} for students of grade levev: ${GradeLevel} with a ${AptitudeLevel} aptitude level. Take into account the following topic and additional information: ${TopicAdditionalInfo}`;
+        const systemPrompt = `You are an expert teacher on ${CourseName}. Your task is to create professional and well formatted documents at the request of the user. Only return the docmument without any conversation.`;
         // Call OpenAI API to get the generated content
         const completion = yield openai.chat.completions.create({
             messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }],
@@ -114,6 +114,7 @@ const handler = (event) => __awaiter(void 0, void 0, void 0, function* () {
                 UserEmail,
                 DocumentURL: embedLink,
                 FileId: fileId,
+                CourseName
             },
         };
         yield dynamoDb.put(newDocument).promise();
