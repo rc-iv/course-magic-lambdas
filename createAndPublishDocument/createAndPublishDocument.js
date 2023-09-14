@@ -11,6 +11,113 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = void 0;
 const googleapis_1 = require("googleapis");
+const create_document = (auth, fileName) => __awaiter(void 0, void 0, void 0, function* () {
+    const docs = googleapis_1.google.docs({ version: "v1", auth });
+    const res = yield docs.documents.create({
+        requestBody: {
+            title: fileName,
+        },
+    });
+    console.log(res.data);
+    return res.data;
+});
+const fill_content_document = (auth, // Replace 'any' with the specific type of auth object
+documentId, contentJson) => __awaiter(void 0, void 0, void 0, function* () {
+    const docs = googleapis_1.google.docs({ version: "v1", auth });
+    let requests = [];
+    let index = 1;
+    // Process title
+    if (contentJson.title) {
+        requests.push({
+            insertText: {
+                location: { index },
+                text: `${contentJson.title}\n`,
+            },
+        });
+        index += contentJson.title.length + 1; // +1 for the newline character
+    }
+    // Process body
+    contentJson.body.forEach((item) => {
+        if (item.sectionBreak) {
+            // For now, we just add a line break for a section break
+            requests.push({
+                insertText: {
+                    location: { index },
+                    text: '\n',
+                },
+            });
+            index++;
+        }
+        else if (item.paragraph) {
+            let paragraphText = '';
+            item.paragraph.elements.forEach((element) => {
+                paragraphText += element.textRun.content;
+            });
+            requests.push({
+                insertText: {
+                    location: { index },
+                    text: paragraphText,
+                },
+            });
+            index += paragraphText.length;
+            // Apply formatting
+            let startOffset = index - paragraphText.length;
+            item.paragraph.elements.forEach((element) => {
+                let textStyle = element.textRun.textStyle;
+                if (textStyle) {
+                    let endIndex = startOffset + element.textRun.content.length;
+                    if (textStyle.bold) {
+                        requests.push({
+                            updateTextStyle: {
+                                range: {
+                                    startIndex: startOffset,
+                                    endIndex: endIndex,
+                                },
+                                textStyle: { bold: true },
+                                fields: 'bold',
+                            },
+                        });
+                    }
+                    if (textStyle.fontSize) {
+                        requests.push({
+                            updateTextStyle: {
+                                range: {
+                                    startIndex: startOffset,
+                                    endIndex: endIndex,
+                                },
+                                textStyle: { fontSize: textStyle.fontSize },
+                                fields: 'fontSize',
+                            },
+                        });
+                    }
+                }
+                startOffset += element.textRun.content.length;
+            });
+            // Apply alignment
+            if (item.paragraph.alignment) {
+                requests.push({
+                    updateParagraphStyle: {
+                        range: {
+                            startIndex: index - paragraphText.length,
+                            endIndex: index,
+                        },
+                        paragraphStyle: {
+                            alignment: item.paragraph.alignment,
+                        },
+                        fields: 'alignment',
+                    },
+                });
+            }
+        }
+    });
+    // Make the batchUpdate API call
+    const res = yield docs.documents.batchUpdate({
+        documentId,
+        requestBody: { requests },
+    });
+    console.log(res.data);
+    return res.data;
+});
 const handler = (event) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     // Initialize the Drive API client

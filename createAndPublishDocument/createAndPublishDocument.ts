@@ -1,5 +1,132 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import { google } from "googleapis";
+import { google, docs_v1 } from "googleapis";
+
+interface ContentJson {
+  title?: string;
+  body: any[];  // You may replace 'any' with more specific types
+}
+
+const create_document = async (
+  auth: any,
+  fileName: string
+) => {
+  const docs = google.docs({ version: "v1", auth });
+  const res = await docs.documents.create({
+    requestBody: {
+      title: fileName,
+    },
+  });
+  console.log(res.data);
+  return res.data;
+};
+
+const fill_content_document = async (
+  auth: any,  // Replace 'any' with the specific type of auth object
+  documentId: string,
+  contentJson: ContentJson
+): Promise<docs_v1.Schema$BatchUpdateDocumentResponse> => {
+  const docs = google.docs({ version: "v1", auth });
+  
+  let requests: docs_v1.Schema$Request[] = [];
+  let index = 1;
+  
+  // Process title
+  if (contentJson.title) {
+    requests.push({
+      insertText: {
+        location: { index },
+        text: `${contentJson.title}\n`,
+      },
+    });
+    index += contentJson.title.length + 1; // +1 for the newline character
+  }
+  
+  // Process body
+  contentJson.body.forEach((item) => {
+    if (item.sectionBreak) {
+      // For now, we just add a line break for a section break
+      requests.push({
+        insertText: {
+          location: { index },
+          text: '\n',
+        },
+      });
+      index++;
+    } else if (item.paragraph) {
+      let paragraphText = '';
+      item.paragraph.elements.forEach((element) => {
+        paragraphText += element.textRun.content;
+      });
+      requests.push({
+        insertText: {
+          location: { index },
+          text: paragraphText,
+        },
+      });
+      index += paragraphText.length;
+      
+      // Apply formatting
+      let startOffset = index - paragraphText.length;
+      item.paragraph.elements.forEach((element) => {
+        let textStyle = element.textRun.textStyle;
+        if (textStyle) {
+          let endIndex = startOffset + element.textRun.content.length;
+          if (textStyle.bold) {
+            requests.push({
+              updateTextStyle: {
+                range: {
+                  startIndex: startOffset,
+                  endIndex: endIndex,
+                },
+                textStyle: { bold: true },
+                fields: 'bold',
+              },
+            });
+          }
+          if (textStyle.fontSize) {
+            requests.push({
+              updateTextStyle: {
+                range: {
+                  startIndex: startOffset,
+                  endIndex: endIndex,
+                },
+                textStyle: { fontSize: textStyle.fontSize },
+                fields: 'fontSize',
+              },
+            });
+          }
+        }
+        startOffset += element.textRun.content.length;
+      });
+      
+      // Apply alignment
+      if (item.paragraph.alignment) {
+        requests.push({
+          updateParagraphStyle: {
+            range: {
+              startIndex: index - paragraphText.length,
+              endIndex: index,
+            },
+            paragraphStyle: {
+              alignment: item.paragraph.alignment,
+            },
+            fields: 'alignment',
+          },
+        });
+      }
+    }
+  });
+  
+  // Make the batchUpdate API call
+  const res = await docs.documents.batchUpdate({
+    documentId,
+    requestBody: { requests },
+  });
+  
+  console.log(res.data);
+  return res.data
+};
+
 
 export const handler = async (
   event: APIGatewayProxyEvent
